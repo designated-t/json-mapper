@@ -1,18 +1,17 @@
 
 import androidx.compose.desktop.ui.tooling.preview.Preview
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.defaultMinSize
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
@@ -20,6 +19,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Button
 import androidx.compose.material.ButtonDefaults
 import androidx.compose.material.MaterialTheme
+import androidx.compose.material.Surface
 import androidx.compose.material.Text
 import androidx.compose.material.TextField
 import androidx.compose.runtime.Composable
@@ -88,7 +88,7 @@ fun App() {
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .background(creamyWhite)
+            .background(Color.White)
     ) {
         Row(
             modifier = Modifier
@@ -98,12 +98,18 @@ fun App() {
             Mappers.entries.forEach {
                 Button(
                     onClick = { selectedMapper = it },
+                    enabled = it.enabled,
+                    colors = ButtonDefaults.buttonColors(backgroundColor = Color.White),
+                    shape = RectangleShape,
                     modifier = Modifier
                         .heightIn(min = 75.dp)
                         .weight(1f),
-                    enabled = it.enabled,
-                    colors = ButtonDefaults.buttonColors(backgroundColor = mocha),
-                    elevation = null
+                    elevation = ButtonDefaults.elevation(
+                        defaultElevation = 4.dp,
+                        pressedElevation = 16.dp,
+                        hoveredElevation = 8.dp,
+                        focusedElevation = 8.dp
+                    )
                 ) {
                     Text("${it.buttonName} Mapper")
                 }
@@ -126,7 +132,9 @@ fun App() {
                             nameContent = it
                         },
                         onSave = {
-                            entities[entities.indexOf(selectedEntity)] = Entity(idContent, nameContent)
+                            val entityToSave = Entity(idContent, nameContent)
+                            entities[entities.indexOf(selectedEntity)] = entityToSave
+                            selectedEntity = entityToSave
                         }
                     )
 
@@ -192,77 +200,88 @@ fun Sidebar(
 ) {
     Column(
         modifier = Modifier
-            .width(300.dp)
+            .width(320.dp)
             .fillMaxHeight(),
     ) {
-        Row(
+/*        Surface(
+            elevation = 12.dp,
+            shape = RoundedCornerShape(12.dp),
             modifier = Modifier
                 .padding(16.dp)
-                .betterShadow()
                 .height(75.dp)
                 .fillMaxWidth()
-                .background(
-                    color = mocha,
-                    shape = RoundedCornerShape(12.dp)
-                )
-                .border(
-                    width = 4.dp,
-                    shape = RoundedCornerShape(12.dp),
-                    color = deepBrown
-                ),
-            verticalAlignment = Alignment.CenterVertically
         ) {
-            Text(
-                text = "Entity Properties",
-                modifier = Modifier.fillMaxWidth(),
-                style = MaterialTheme.typography.h4,
-                textAlign = TextAlign.Center
-            )
-        }
+            Row(
+                modifier = Modifier
+                    .fillMaxSize(),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Text(
+                    text = "Entity Properties",
+                    modifier = Modifier.fillMaxWidth(),
+                    style = MaterialTheme.typography.h4,
+                    textAlign = TextAlign.Center
+                )
+            }
+        }*/
 
-        Row(
+        Surface(
+            elevation = 12.dp,
+            shape = RoundedCornerShape(12.dp),
             modifier = Modifier
                 .padding(16.dp)
-                .betterShadow()
-                .fillMaxSize()
-                .background(
-                    color = mocha,
-                    shape = RoundedCornerShape(12.dp)
-                )
-                .border(
-                    width = 4.dp,
-                    shape = RoundedCornerShape(12.dp),
-                    color = deepBrown
-                )
+                .fillMaxSize(),
+            color = Color.White,
         ) {
-            if (entity != null) {
-                TextField(
-                    value = idContent,
-                    onValueChange = { onIdValueChange(it) },
-                    label = { Text("Id") },
-                    modifier = Modifier.fillMaxWidth()
-                )
-
-                TextField(
-                    value = nameContent,
-                    onValueChange = { onNameValueChange(it) },
-                    label = { Text("Name") },
-                    modifier = Modifier.fillMaxWidth()
-                )
-
-                Spacer(Modifier.height(16.dp))
-
-                Button(
-                    onClick = {
-                        onSave()
-                    },
+            Column(
+                modifier = Modifier
+                    .padding(16.dp)
+                    .fillMaxSize()
+            ) {
+                Text(
+                    text = "Entity Properties",
                     modifier = Modifier.fillMaxWidth(),
-                    enabled = entity.name != nameContent || entity.id != idContent
-                ) {
-                    Text("Save")
+                    style = MaterialTheme.typography.h4,
+                    textAlign = TextAlign.Center,
+                    maxLines = 1
+                )
+
+                Spacer(modifier = Modifier.size(16.dp))
+
+                if (entity != null) {
+                    TextField(
+                        value = idContent,
+                        onValueChange = { onIdValueChange(it) },
+                        label = { Text("Id") },
+                        modifier = Modifier.fillMaxWidth()
+                    )
+
+                    TextField(
+                        value = nameContent,
+                        onValueChange = { onNameValueChange(it) },
+                        label = { Text("Name") },
+                        modifier = Modifier.fillMaxWidth()
+                    )
+
+                    Spacer(Modifier.height(16.dp))
+
+                    Button(
+                        onClick = {
+                            onSave()
+                        },
+                        modifier = Modifier.fillMaxWidth(),
+                        enabled = entity.name != nameContent || entity.id != idContent
+                    ) {
+                        Text("Save")
+                    }
+                } else {
+                    Text(
+                        "Select an Entity to continue...",
+                        style = MaterialTheme.typography.subtitle2,
+                        modifier = Modifier.fillMaxWidth(),
+                        textAlign = TextAlign.Center,
+                    )
                 }
-            } else {
-                Text("Select an Entity to continue...", style = MaterialTheme.typography.subtitle2)
             }
         }
     }
@@ -275,75 +294,74 @@ fun Grid(
     onSelectItem: (Int) -> Unit
 ) {
     Column(
-        modifier = Modifier
-            .defaultMinSize(minWidth = 500.dp),
+        modifier = Modifier.fillMaxSize(),
     ) {
-        Row(
+        Surface(
+            elevation = 12.dp,
+            shape = RoundedCornerShape(12.dp),
             modifier = Modifier
                 .padding(16.dp)
-                .betterShadow()
-                .height(75.dp)
-                .background(
-                    color = mocha,
-                    shape = RoundedCornerShape(12.dp)
-                )
-                .border(
-                    width = 4.dp,
-                    shape = RoundedCornerShape(12.dp),
-                    color = deepBrown
-                ),
-            horizontalArrangement = Arrangement.SpaceEvenly,
-            verticalAlignment = Alignment.CenterVertically
+                .height(75.dp),
+            color = Color.White,
         ) {
-
-            Text(
-                "Entities",
-                modifier = Modifier.weight(1f).padding(horizontal = 16.dp).fillMaxWidth(),
-                style = MaterialTheme.typography.h4,
-                textAlign = TextAlign.Center,
-            )
-
-            Button(
-                onClick = onAddItem,
-                modifier = Modifier.weight(3f).padding(16.dp).fillMaxSize(),
-                colors = ButtonDefaults.buttonColors(backgroundColor = mutedCoral),
-                shape = RectangleShape
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceEvenly,
+                verticalAlignment = Alignment.CenterVertically
             ) {
-                Text("Add New Entity")
+                Text(
+                    "Entities",
+                    modifier = Modifier.weight(1f).padding(16.dp).fillMaxWidth(),
+                    style = MaterialTheme.typography.h4,
+                    textAlign = TextAlign.Center,
+                    maxLines = 1
+                )
+
+                Button(
+                    onClick = onAddItem,
+                    elevation = ButtonDefaults.elevation(
+                        defaultElevation = 4.dp,
+                        pressedElevation = 16.dp,
+                        hoveredElevation = 8.dp,
+                        focusedElevation = 8.dp
+                    ),
+                    modifier = Modifier.weight(3f).padding(16.dp).fillMaxSize(),
+                    colors = ButtonDefaults.buttonColors(backgroundColor = Color.LightGray),
+                    shape = RoundedCornerShape(12.dp)
+                ) {
+                    Text("Add New Entity")
+                }
             }
 
         }
 
-        LazyVerticalGrid(
-            columns = GridCells.Adaptive(150.dp),
+        Surface(
+            elevation = 12.dp,
+            shape = RoundedCornerShape(12.dp),
             modifier = Modifier
                 .padding(16.dp)
-                .betterShadow()
-                .fillMaxSize()
-                .background(
-                    color = mocha,
-                    shape = RoundedCornerShape(12.dp)
-                )
-                .border(
-                    width = 4.dp,
-                    shape = RoundedCornerShape(12.dp),
-                    color = deepBrown
-                )
+                .fillMaxSize(),
+            color = Color.White,
         ) {
-            items(entities.size) { index ->
-                val item = entities[index]
-                val colour = UIColours.entries.random().colour
-                Button(
-                    onClick = { onSelectItem(index) },
-                    modifier = Modifier
-                        .width(150.dp)
-                        .height(150.dp)
-                        .padding(16.dp),
-                    colors = ButtonDefaults.buttonColors(backgroundColor = colour),
-                    shape = RoundedCornerShape(4.dp),
-                    elevation = null,
-                ) {
-                    Text(item.id.ifEmpty { "Edit" })
+            LazyVerticalGrid(
+                columns = GridCells.Adaptive(150.dp),
+                modifier = Modifier.fillMaxSize()
+            ) {
+                items(entities.size) { index ->
+                    val item = entities[index]
+                    val colour = UIColours.entries.random().colour
+                    Button(
+                        onClick = { onSelectItem(index) },
+                        modifier = Modifier
+                            .width(150.dp)
+                            .height(150.dp)
+                            .padding(16.dp),
+                        colors = ButtonDefaults.buttonColors(backgroundColor = colour),
+                        shape = RoundedCornerShape(4.dp),
+                        elevation = null,
+                    ) {
+                        Text(item.id.ifEmpty { "Edit" })
+                    }
                 }
             }
         }
@@ -363,5 +381,3 @@ fun Modifier.betterShadow() =
             shape = RoundedCornerShape(12.dp),
             clip = false
         )
-
-
