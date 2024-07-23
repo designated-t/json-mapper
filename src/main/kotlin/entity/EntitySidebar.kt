@@ -40,7 +40,6 @@ object EntitySidebar {
     ) {
         var id by remember(selectedEntity) { mutableStateOf(selectedEntity?.id ?: "") }
         var name by remember(selectedEntity) { mutableStateOf(selectedEntity?.name ?: "") }
-        var randomVariable by remember(selectedEntity) { mutableStateOf(selectedEntity?.randomVariable ?: "") }
 
         Column(
             modifier
@@ -101,34 +100,12 @@ object EntitySidebar {
                         singleLine = true
                     )
                 }
-                Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .height(ROW_HEIGHT),
-                    horizontalArrangement = Arrangement.SpaceBetween
-                ) {
-                    Text(
-                        text = "Random:",
-                        modifier = Modifier
-                            .align(Alignment.CenterVertically)
-                            .fillMaxHeight(),
-                        style = MaterialTheme.typography.h6,
-                        color = Color.White
-                    )
-                    OutlinedTextField(
-                        value = randomVariable,
-                        onValueChange = { randomVariable = it },
-                        modifier = Modifier
-                            .width(TEXT_FIELD_WIDTH)
-                            .fillMaxHeight()
-                            .padding(PADDING),
-                        singleLine = true
-                    )
-                }
+
                 Spacer(modifier = Modifier.height(SPACER))
+
                 Button(
                     onClick = {
-                        onSave(Entity(id, name, randomVariable))
+                        onSave(Entity(id, name))
                     }
                 ) {
                     Text("Save")
